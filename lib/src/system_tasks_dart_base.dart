@@ -87,7 +87,7 @@ class Task {
   /**
    * 重启所有相关的进程
    */
-  Future<void> reStartLinks() async {
+  Future<void> reStartLikes() async {
     try {
       await killLikes();
       await start();

@@ -1,6 +1,6 @@
 name: system_tasks_dart
 description: Get a list of system processes, and you can kill, start, restart a process
-version: 0.1.0
+version: 0.2.0
 homepage: https://github.com/januwA/system_tasks_dart.git
 
 environment:

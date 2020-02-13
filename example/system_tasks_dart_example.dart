@@ -4,7 +4,7 @@ void main() {
   SystemTasks.tasks().then((ps) {
     var p = ps.firstWhere((p) => p.pname.toLowerCase() == 'code.exe');
     if (p != null) {
-      p.reStartLinks();
+      p.reStartLikes();
     }
   });
 }
