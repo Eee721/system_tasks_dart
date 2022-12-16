@@ -1,10 +1,7 @@
 import 'package:system_tasks_dart/system_tasks_dart.dart';
 
 void main() async{
-  var b = await SystemTasks.isRunning("E:\\working\\projects\\muflauncher\\.build\\launcher\\launcher.exe");
-  print(b);
-
-  var task = await SystemTasks.getRunningTaskByPath("E:\\working\\projects\\muflauncher\\.build\\launcher\\launcher.exe");
+  var task = await SystemTasks.getRunningTaskByPath("E:\\working\\projects\\muflauncher\\.build\\launcher\\updater.exe");
   if (task != null){
     print(task);
   }
