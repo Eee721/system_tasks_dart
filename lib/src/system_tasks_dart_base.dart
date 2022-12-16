@@ -122,9 +122,9 @@ class Task {
   /**
    * 杀死此进程
    */
-  Future<ProcessResult> kill() {
+  Future<ProcessResult> kill({bool killChildren = true}) {
     String command =
-        isWindows ? "taskkill /PID ${pid} /T /F" : "kill -s 9 ${pid}";
+        isWindows ? "taskkill /PID ${pid} ${killChildren?"/T":""} /F" : "kill -s 9 ${pid}";
     return run(command, []);
   }
 
