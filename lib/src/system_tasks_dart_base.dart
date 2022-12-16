@@ -67,10 +67,20 @@ class SystemTasks {
         var r = await runExecutableArguments("wmic", prms);
         // print(r.stdout);
         if (r.stdout != null) {
-          String stdout = r.stdout.toString();
+          String stdout = r.stdout.toString().trim();
           // print(stdout);
           List<Task> tasks = stdout.split("\n").where(_trim).map(_mapLineWindows).toList();
-          tasks = tasks.where((e) => (isWindows ? tasks.indexOf(e) > 1 : tasks.indexOf(e) > 0)).toList();
+          if (int.tryParse(tasks[0].pid) == null){
+            tasks.removeAt(0);
+          }
+
+          // tasks.forEach((element) {
+          //   print(element.p);
+          // });
+          // tasks = tasks.where((e) => (isWindows ? tasks.indexOf(e) >= 1 : tasks.indexOf(e) >= 0)).toList();
+          // tasks.forEach((element) {
+          //   print(element.p);
+          // });
           return tasks;
         } else {
           return <Task>[];
