@@ -32,14 +32,14 @@ class SystemTasks {
     return res.containsKey(normalize(exePath));
   }
 
-  static Future<Task> getRunningTaskByPath(String exePath) async {
+  static Future<Task?> getRunningTaskByPath(String exePath) async {
     var name = basename(exePath);
     var res = await pathToTasks(byName: name);
     // print(res);
     return res[exePath];
   }
 
-  static Future<Map<String,Task>> pathToTasks({String byName = null}) async {
+  static Future<Map<String,Task>> pathToTasks({String? byName}) async {
     var res = await tasks(byName: byName);
     Map<String,Task> mapRes = {};
     res.forEach((element) {
@@ -50,7 +50,7 @@ class SystemTasks {
     return mapRes;
   }
 
-  static Future<List<Task>> tasks({String byName = null}) async {
+  static Future<List<Task>> tasks({String? byName}) async {
     if (isWindows){
       try {
         var prms = [
@@ -69,11 +69,11 @@ class SystemTasks {
         if (r.stdout != null) {
           String stdout = r.stdout.toString();
           // print(stdout);
-          List tasks = stdout.split("\n").where(_trim).map(_mapLineWindows).toList();
+          List<Task> tasks = stdout.split("\n").where(_trim).map(_mapLineWindows).toList();
           tasks = tasks.where((e) => (isWindows ? tasks.indexOf(e) > 1 : tasks.indexOf(e) > 0)).toList();
           return tasks;
         } else {
-          return List<Task>();
+          return <Task>[];
         }
       } catch (e) {
         throw e;
@@ -84,14 +84,11 @@ class SystemTasks {
         var r = await runExecutableArguments(_CMD, []);
         if (r.stdout != null) {
           String stdout = r.stdout.toString();
-          List tasks = stdout.split("\n").where(_trim).map(_mapLine).toList();
-          tasks = tasks
-              .where((e) =>
-          (isWindows ? tasks.indexOf(e) > 1 : tasks.indexOf(e) > 0))
-              .toList();
+          List<Task> tasks = stdout.split("\n").where(_trim).map(_mapLine).toList();
+          tasks = tasks.where((e) => (isWindows ? tasks.indexOf(e) > 1 : tasks.indexOf(e) > 0)).toList();
           return tasks;
         } else {
-          return List<Task>();
+          return <Task>[];
         }
       } catch (e) {
         throw e;
