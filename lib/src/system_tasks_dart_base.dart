@@ -27,12 +27,19 @@ class SystemTasks {
 
   static Future<bool> isRunning(String exePath) async {
     var name = basename(exePath);
-    var res = await pathTotasks(byName: name);
+    var res = await pathToTasks(byName: name);
     // print(res);
     return res.containsKey(normalize(exePath));
   }
 
-  static Future<Map<String,Task>> pathTotasks({String byName = null}) async {
+  static Future<Task> getRunningTaskByPath(String exePath) async {
+    var name = basename(exePath);
+    var res = await pathToTasks(byName: name);
+    // print(res);
+    return res[exePath];
+  }
+
+  static Future<Map<String,Task>> pathToTasks({String byName = null}) async {
     var res = await tasks(byName: byName);
     Map<String,Task> mapRes = {};
     res.forEach((element) {
