@@ -73,7 +73,7 @@ class SystemTasks {
           // if (int.tryParse(tasks[0].pid) == null){
           //   tasks.removeAt(0);
           // }
-          tasks = tasks.where((e) => e.p.length==4 && int.tryParse(e.pid) == null).toList();
+          tasks = tasks.where((e) => e.p.length==4 && int.tryParse(e.pid) != null).toList();
 
           // tasks.forEach((element) {
           //   print(element.p);
