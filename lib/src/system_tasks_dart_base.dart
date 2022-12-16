@@ -70,9 +70,10 @@ class SystemTasks {
           String stdout = r.stdout.toString().trim();
           // print(stdout);
           List<Task> tasks = stdout.split("\n").where(_trim).map(_mapLineWindows).toList();
-          if (int.tryParse(tasks[0].pid) == null){
-            tasks.removeAt(0);
-          }
+          // if (int.tryParse(tasks[0].pid) == null){
+          //   tasks.removeAt(0);
+          // }
+          tasks = tasks.where((e) => e.p.length==4 && int.tryParse(e.pid) == null).toList();
 
           // tasks.forEach((element) {
           //   print(element.p);
