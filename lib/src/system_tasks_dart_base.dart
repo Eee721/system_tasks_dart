@@ -128,6 +128,27 @@ class Task {
     return run(command, []);
   }
 
+  Future<ProcessResult> killExcept(String exPid) {
+
+    if (isWindows){
+      var prms = [
+        "/PID" ,
+        "${pid}",
+        "/FI",
+        "PID ne ${exPid}",
+        "/F",
+        "/T",
+      ];
+      return runExecutableArguments("taskkill", prms);
+    }
+    else {
+      String command =
+      isWindows ? "taskkill /PID ${pid} /T /F" : "kill -s 9 ${pid}";
+      return run(command, []);
+    }
+
+  }
+
   /**
    * 杀死和此进程一样name的所有进程
    */
