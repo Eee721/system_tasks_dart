@@ -1,5 +1,6 @@
 import 'dart:io' show Platform, ProcessResult;
 
+import 'package:path/path.dart';
 import 'package:process_run/process_run.dart';
 
 class Awesome {
@@ -17,24 +18,79 @@ Task _mapLine(String line) {
   return Task(line.trim().split(RegExp(r"\s+")), line);
 }
 
+Task _mapLineWindows(String line) {
+  return Task(line.trim().split(','), line);
+}
+
+
 class SystemTasks {
-  static Future<List<Task>> tasks() async {
-    try {
-      var r = await run(_CMD, []);
-      if (r.stdout != null) {
-        String stdout = r.stdout.toString();
-        List tasks = stdout.split("\n").where(_trim).map(_mapLine).toList();
-        tasks = tasks
-            .where((e) =>
-                (isWindows ? tasks.indexOf(e) > 1 : tasks.indexOf(e) > 0))
-            .toList();
-        return tasks;
-      } else {
-        return List<Task>();
+
+  static Future<bool> isRunning(String exePath) async {
+    var name = basename(exePath);
+    var res = await pathTotasks(byName: name);
+    // print(res);
+    return res.containsKey(normalize(exePath));
+  }
+
+  static Future<Map<String,Task>> pathTotasks({String byName = null}) async {
+    var res = await tasks(byName: byName);
+    Map<String,Task> mapRes = {};
+    res.forEach((element) {
+      if (element.exePath.isEmpty) return;
+      // print(normalize(element.exePath));
+      mapRes[ normalize(element.exePath)] = element;
+    });
+    return mapRes;
+  }
+
+  static Future<List<Task>> tasks({String byName = null}) async {
+    if (isWindows){
+      try {
+        var prms = [
+          "process" ,
+          if (byName != null)"where" ,
+          if (byName != null)'name="$byName"' ,
+          "get",
+          'ProcessID,name,ExecutablePath' ,
+          "/format:csv"
+        ];
+        // if (byName != null){
+        //   prms.add('where "name=\'$byName\'"');
+        // }
+        var r = await runExecutableArguments("wmic", prms);
+        // print(r.stdout);
+        if (r.stdout != null) {
+          String stdout = r.stdout.toString();
+          // print(stdout);
+          List tasks = stdout.split("\n").where(_trim).map(_mapLineWindows).toList();
+          tasks = tasks.where((e) => (isWindows ? tasks.indexOf(e) > 1 : tasks.indexOf(e) > 0)).toList();
+          return tasks;
+        } else {
+          return List<Task>();
+        }
+      } catch (e) {
+        throw e;
       }
-    } catch (e) {
-      throw e;
     }
+    else{
+      try {
+        var r = await runExecutableArguments(_CMD, []);
+        if (r.stdout != null) {
+          String stdout = r.stdout.toString();
+          List tasks = stdout.split("\n").where(_trim).map(_mapLine).toList();
+          tasks = tasks
+              .where((e) =>
+          (isWindows ? tasks.indexOf(e) > 1 : tasks.indexOf(e) > 0))
+              .toList();
+          return tasks;
+        } else {
+          return List<Task>();
+        }
+      } catch (e) {
+        throw e;
+      }
+    }
+
   }
 }
 
@@ -42,8 +98,9 @@ class Task {
   final List<String> p;
   final String line;
 
-  String get pname => isWindows ? p[0] : p[10];
-  String get pid => p[1];
+  String get pname => isWindows ? p[2] : p[10];
+  String get pid => p[3];
+  String get exePath => p[1];
 
   const Task(this.p, this.line);
 
